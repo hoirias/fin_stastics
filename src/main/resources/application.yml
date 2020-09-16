@@ -24,7 +24,7 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: coupon
+          group: stastics
           destination: present,menu
           contentType: application/json
         event-out:
@@ -67,4 +67,4 @@ logging:
   level:
     org.hibernate.type: trace
     org.springframework.cloud: debug
-  file: /mnt/aws/logs/coupon-application.log
+  file: /mnt/aws/logs/stastics-application.log
