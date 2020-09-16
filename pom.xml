@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>lspProject</groupId>
-	<artifactId>coupon</artifactId>
+	<artifactId>stastics</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>coupon</name>
+	<name>stastics</name>
 	<description>Demo project for Spring Boot</description>
 
 	<properties>
