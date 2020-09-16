@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: coupon
+  name: stastics
   labels:
-    app: coupon
+    app: stastics
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: coupon
+      app: stastics
   template:
     metadata:
       labels:
-        app: coupon
+        app: stastics
     spec:
       containers:
         - name: coupon
-          image: username/coupon:latest
+          image: username/stastics:latest
           ports:
             - containerPort: 8080
           readinessProbe:
