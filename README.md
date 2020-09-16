@@ -1,6 +1,7 @@
-# Intensive Lv2. TeamC
+# Intensive Lv2. TeamC_송승일
 
-음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA의 개발
+음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA의 개발.
+개인 프로젝트로 주문 내역을 기반으로 통계를 만들고 통계자료를 볼 수 있는 신규 마이크로서비스를 개발 한다.
 
 # Table of contents
 
@@ -23,43 +24,38 @@
 
 # 서비스 시나리오
 
-음식을 주문하고, 요리현황 및 배달현황을 조회
+음식을 주문하고, 요리현황 및 배달현황을 조회.
+주문결과를 기반으로 식당+메뉴별 주문현황의 통계 데이터를 생성한다.
 
 ## 기능적 요구사항
 
-1. 고객이 주문을 하면 주문정보를 바탕으로 요리가 시작된다.
-1. 요리가 완료되면 배달이 시작된다. 
-1. 고객이 주문취소를 하게 되면 요리가 취소된다.
-1. 고객 주문에 재고가 없을 경우 주문이 취소된다. 
-1. 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.
+1. 주문결과를 기반으로 식당+메뉴별 주문현황의 통계 데이터를 생성한다.
+1. 주문결과를 기반으로 생성된 통계의 다른 Key 값을 Mypage에서 확인한다.
 
 ## 비기능적 요구사항
 1. 장애격리
-    1. 주문시스템이 과중되면 사용자를 잠시동안 받지 않고 잠시후에 주문하도록 유도한다.
-    1. 주문 시스템이 죽을 경우 재기동 될 수 있도록 한다.
+    1. 통계 시스템이 과중되면 잠시동안 주문 접수 내역을 받지 않도록 한다.
+    1. 통계 시스템이 죽을 경우 재기동 될 수 있도록 한다.
 1. 운영
-    1. 마이크로서비스별로 로그를 한 곳에 모아 볼 수 있도록 시스템을 구성한다.
-    1. 마이크로서비스의 개발 및 빌드 배포가 한번에 이루어질 수 있도록 시스템을 구성한다.
-    1. 서비스라우팅을 통해 한개의 접속점으로 서비스를 이용할 수 있도록 한다.
-    1. 주문 시스템이 과중되면 Replica를 추가로 띄울 수 있도록 한다.
+    1. 통계 시스템이 과중되면 Replica를 추가로 띄울 수 있도록 한다.
 
 # 분석/설계
 
 ## Event Storming 결과
-* MSAEz 로 모델링한 이벤트스토밍 결과 : http://www.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/mine/52e31337a76ddeacc1d288ea11e24158/-MH4jm58lJNE_9tgT82F
-![EventStorming_Restaurant](https://user-images.githubusercontent.com/54210936/93179266-66201d80-f770-11ea-9530-aae4dfef7e4d.png)
+* MSAEz 로 모델링한 이벤트스토밍 결과 : http://www.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/mine/31d6e46b00cfe0fde39144c1d94d53e9/-MHFudGR0LDzQZSMO1tV
+![msaez](https://user-images.githubusercontent.com/54210936/93335294-284ef200-f861-11ea-9674-4f11ec3c3f7d.png)
 
 ### 이벤트 도출
 1. 주문됨
-1. 주문취소됨
-1. 요리재고체크됨
-1. 요리완료
-1. 배달
+1. 주문한 식당과 메뉴를 기반으로 통계자료를 생성한다.
+1. 주문이 취소되면통계자료에서 삭제한다.
+1. 통계 생성시 특정 이상이 감지되면 주문을 취소한다.
 
 
 ### 어그리게잇으로 묶기
 
   * 고객의 주문(Order), 식당의 요리(Cook), 배달(Delivery)은 그와 연결된 command와 event 들에 의하여 트랙잭션이 유지되어야 하는 단위로 묶어 줌.
+  * 개인 프로젝트에서는 주문(Order)를 기반으로 한 통계자료를 생성하는 어그리게잇을 추가해준다.
 
 ### Policy 부착 
 
@@ -67,15 +63,11 @@
 
 ### 기능적 요구사항 검증
  * 고객이 메뉴를 주문한다.(ok)
- * 주문된 주문정보를 레스토랑으로 전달한다.(ok)
- * 주문정보를 바탕으로 요리가 시작된다.(ok)
- * 요리가 완료되면 배달이 시작된다.(ok)
  * 고객은 본인의 주문을 취소할 수 있다.(ok)
- * 주문이 취소되면 요리를 취소한다.(ok)
- * 주문이 취소되면, 요리취소 내용을 고객에게 전달한다.(ok)
- * 고객이 주문 시 재고량을 체크한다.(ok)
- * 재고가 없을 경우 주문이 취소된다.(ok)
- * 고객은 Mypage를 통해, 주문과 요리, 배달의 전체 상황을 조회할수 있다.(ok)
+ * 고객이 메뉴를 주문하면 식당과 메뉴를 기반으로 통계를 생성한다.(ok)
+ * 고객이 주문을 취소하면 통계에서도 데이터를 삭제한다.(ok)
+ * 통계 데이터에 이상이 감지되면(특정 숫자이상의 주문) 주문을 취소한다.(ok)
+ * 고객은 Mypage를 통해, 어느식당의 메뉴가 인기 있는지 조회할 수 있다.(ok)
 
 </br>
 </br>
@@ -89,7 +81,7 @@
 
 ## DDD 의 적용
 
-- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (예시는 주문- Order 마이크로서비스).
+- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (통계-stastics 마이크로서비스).
 
 ```
 package myProject_LSP;
@@ -99,18 +91,15 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 
 @Entity
-@Table(name="Order_table")
-public class Order {
+@Table(name="Stastics_table")
+public class Stastics {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private Integer restaurantId;
     private Integer restaurantMenuId;
-    private Integer customerId;
-    private Integer qty;
-    private Long modifiedDate;
-    private String status;
+    private Integer velue;
     
     ....
 }
@@ -119,8 +108,9 @@ public class Order {
 ```
 package myProject_LSP;
 import org.springframework.data.repository.PagingAndSortingRepository;
-public interface OrderRepository extends PagingAndSortingRepository<Order, Long>{
 
+public interface StasticsRepository extends PagingAndSortingRepository<Stastics, Long>{
+    Optional<Stastics> findByOrderId(Long orderId);
 }
 ```
 </br>
@@ -128,49 +118,48 @@ public interface OrderRepository extends PagingAndSortingRepository<Order, Long>
 ## 동기식 호출과 Fallback 처리
 
 분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출.
-- 요리(cook) 서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
+- 주문(Order)이 발생 했을 때, 통계 서비스를 호출하기 위해 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
 ```
-@FeignClient(name="cook", url="${api.url.cook}")
-public interface CancellationService {
+@FeignClient(name="stastics", url="${api.url.stastics}")
+public interface StasticsService {
 
-  @RequestMapping(method= RequestMethod.GET, path="/cancellations")
-  public void cancel(@RequestBody Cancellation cancellation);
+  @RequestMapping(method= RequestMethod.POST, path="/stastics")
+  public void stasticsSend(@RequestBody Stastics stastics);
 
 }
 ```
 
-- 주문이 취소 될 경우 Cancellation 현황에 취소 내역을 접수한다.
+- 주문이 접수 될 경우 통계(Stastics)에 주문내역을 추가 해준다.
 ```
 @PrePersist
 public void onPrePersist(){
-   CookCancelled cookCancelled = new CookCancelled();
-   BeanUtils.copyProperties(this, cookCancelled);
-   cookCancelled.setStatus("COOK : ORDER CANCELED");
-   cookCancelled.publishAfterCommit();
+   Stastics stastics = new Stastics();
+   BeanUtils.copyProperties(this, stastics);
+   stastics.setValue(stastics.getValue()++);
+   stastics.publishAfterCommit();
 ```
 
 </br>
 
 ## 비동기식 호출과 Saga Pattern
 
-주문 접수 및 배달 접수, 재고부족으로 인한 주문 취소는 비동기식으로 처리하여 시스템 상황에 따라 접수 및 취소가 블로킹 되지 않도록 처리 한다. 
-요리 단계 접수시에는 재고를 체크하고 재고가 부족할 경우 주문단계로 비동기식 요리 불가 발행(publish). 
+통계 처리 중, 주문수량 등에 특이성이 발견 될 경우 주문취소(Order)를 요청하는 publish를 발행한다. 
+주문이 취소될 경우에는 주문접수 처에 이상 여부를 alerting 해준다.
  
 ```
 # 주문시 재고량 체크하는 Cook 로직
 @Entity
-@Table(name="Cook_table")
-public class Cook {
+@Table(name="Stastics_table")
+public class Stastics {
     private boolean flowchk = true;
     ....
     @PostPersist
     public void onPostPersist(){
-        if(flowchk) {   // 요리를 할 수 있는 재고가 있을 때 요리를 시작한다
-            Cooked cooked = new Cooked();
-            BeanUtils.copyProperties(this, cooked);
-            this.setStatus("COOK : ORDER RECEIPT");
-            this.qty--;
+        if(flowchk) {    
+            Stastics stastics = new Stastics();
+            BeanUtils.copyProperties(this, stastics);
+            stastics.setValue(this.getValue()++);
             cooked.publishAfterCommit();
         }else{
             CookQtyChecked cookQtyChecked = new CookQtyChecked();
@@ -182,8 +171,7 @@ public class Cook {
     @PrePersist
     public void onPrePersist(){
         // 요리를 할 수 있는 재고가 없을 때 요리를 시작한다
-        if(this.getQty() <= 0) {
-            this.setStatus("COOK : QTY OVER");
+        if(this.getValue() >= 10) {
             flowchk = false;
         }
     }
