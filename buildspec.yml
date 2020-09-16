@@ -45,7 +45,7 @@ phases:
           kind: Service
           metadata:
             name: $IMAGE_REPO_NAME
-            namespace: teamc
+            namespace: hoirias
             labels:
               app: $IMAGE_REPO_NAME
           spec:
@@ -61,7 +61,7 @@ phases:
           kind: Deployment
           metadata:
             name: $IMAGE_REPO_NAME
-            namespace: teamc
+            namespace: hoirias
             labels:
               app: $IMAGE_REPO_NAME
           spec:
@@ -108,7 +108,7 @@ phases:
           kind: HorizontalPodAutoscaler
           metadata:
             name: skcchpa-point
-            namespace: teamc
+            namespace: hoirias
           spec:
             scaleTargetRef:
               apiVersion: apps/v1
@@ -131,7 +131,7 @@ phases:
           kind: DestinationRule
           metadata:
             name: dr-point
-            namespace: teamc
+            namespace: hoirias
           spec:
             host: $IMAGE_REPO_NAME
             trafficPolicy:
