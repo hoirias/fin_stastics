@@ -56,7 +56,7 @@ spring:
                   serde: org.apache.kafka.common.serialization.Serdes$StringSerde
       bindings:
         event-in:
-          group: coupon
+          group: stastics
           destination: present,menu
           contentType: application/json
         event-out:
