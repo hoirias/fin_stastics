@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: coupon
+  name: stastics
   labels:
-    app: coupon
+    app: stastics
 spec:
   ports:
     - port: 8080
       targetPort: 8080
   selector:
-    app: coupon
+    app: stastics
