@@ -99,7 +99,7 @@ public class Stastics {
     private Long id;
     private Integer restaurantId;
     private Integer restaurantMenuId;
-    private Integer velue;
+    private Integer value;
     
     ....
 }
@@ -110,7 +110,7 @@ package myProject_LSP;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface StasticsRepository extends PagingAndSortingRepository<Stastics, Long>{
-    Optional<Stastics> findByOrderId(Long orderId);
+    
 }
 ```
 </br>
@@ -135,8 +135,8 @@ public interface StasticsService {
 @PrePersist
 public void onPrePersist(){
    Stastics stastics = new Stastics();
-   BeanUtils.copyProperties(this, stastics);
-   stastics.setValue(stastics.getValue()++);
+   this.setValue(stastics.getValue()++);
+   BeanUtils.copyProperties(this, stastics);   
    stastics.publishAfterCommit();
 ```
 
