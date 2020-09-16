@@ -3,7 +3,7 @@ version: 0.2
 env:
   variables:
     IMAGE_REPO_NAME: "stastics"
-    _PROJECT_NAME: "admin12-stastics"
+    _PROJECT_NAME: "admin12-fin-stastics"
 
 phases:
   install:
