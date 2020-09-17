@@ -139,10 +139,10 @@ public void onPrePersist(){
    stastics.setValue(this.getValue()+statistics.getValue());    
    stastics.publishAfterCommit();   
 ```
-
-</br>
 ![reqres](https://user-images.githubusercontent.com/54210936/93415519-a7ced680-f8de-11ea-81ab-e21ebf9514e0.png)
 ![reqres2](https://user-images.githubusercontent.com/54210936/93415520-a9000380-f8de-11ea-9ce7-f97c7492a936.png)
+</br>
+
 
 
 
