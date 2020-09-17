@@ -44,7 +44,7 @@
 
 ## Event Storming 결과
 * MSAEz 로 모델링한 이벤트스토밍 결과 : http://www.msaez.io/#/storming/t5Z5EXdDP0UOZDvGzeNH61hF8qG3/mine/31d6e46b00cfe0fde39144c1d94d53e9/-MHFudGR0LDzQZSMO1tV
-![msaez](https://user-images.githubusercontent.com/54210936/93335294-284ef200-f861-11ea-9674-4f11ec3c3f7d.png)
+![msaez](https://user-images.githubusercontent.com/54210936/93413124-81f30300-f8d9-11ea-8cd4-7eb989035517.png)
 
 ### 이벤트 도출
 1. 주문됨
