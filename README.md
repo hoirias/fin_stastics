@@ -1,7 +1,7 @@
 # Intensive Lv2. TeamC_송승일
 
 음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA의 개발.</br>
-개인 프로젝트로 주문내역을 기반으로 인기있는 식당을 조회할 수 있는 통계성 마이크로서비스를 개발한다. 
+개인 프로젝트로 주문내역을 기반으로 식당별 호출횟수를 저장하여 인기있는 식당을 구별 할 수 있게 한다.
 
 # Table of contents
 
@@ -24,16 +24,18 @@
 
 # 서비스 시나리오
 
-음식을 주문하고, 요리현황 및 배달현황을 조회. 주문내역을 기반으로 식당별 주문량을 조회하여 이를 통해 인기있는 식당을 판별.
+음식을 주문하고, 요리현황 및 배달현황을 조회.</br>
+주문내역을 기반으로 식당별 주문량을 조회하여 인기있는 식당을 판별.
 
 ## 기능적 요구사항
 
 1. 주문결과를 기반으로 식당별 인기를 가늠하기 위한 주문 수량을 누적 관리하는 통계시스템의 개발.
-1. 식당별 주문 수량을 Mypage에서 확인.
+1. 식당별 주문 횟수를 Mypage에서 확인.
+1. 비정상적인 주문으로 판단될 경우 특이내역 Status를 주문 단계로 보내준다.
 
 ## 비기능적 요구사항
 1. 장애격리
-    1. 통계 시스템이 과중되면 잠시동안 주문 접수 내역을 받지 않도록 한다.
+    1. 통계 시스템이 과중되면 잠시동안 통계 input을 받지 않도록 한다. 
     1. 통계 시스템이 죽을 경우 재기동 될 수 있도록 한다.
 1. 운영
     1. 통계 시스템이 과중되면 Replica를 추가로 띄울 수 있도록 한다.
@@ -54,7 +56,7 @@
 ### 어그리게잇으로 묶기
 
   * 고객의 주문(Order), 식당의 요리(Cook), 배달(Delivery)은 그와 연결된 command와 event 들에 의하여 트랙잭션이 유지되어야 하는 단위로 묶어 줌.
-  * 개인 프로젝트에서는 주문(Order)를 기반으로 한 통계자료를 생성하는 어그리게잇을 추가해준다.
+  * 개인 프로젝트에서는 주문(Order)를 기반으로 통계자료(Statistics)를 생성하는 어그리게잇을 추가해준다.
 
 ### Policy 부착 
 
@@ -80,7 +82,7 @@
 
 ## DDD 의 적용
 
-- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (통계-stastics 마이크로서비스).
+- 각 서비스내에 도출된 핵심 Aggregate Root 객체를 Entity 로 선언하였다: (통계의 마이크로서비스 ).
 
 ```
 package myProject_LSP;
@@ -90,12 +92,13 @@ import org.springframework.beans.BeanUtils;
 import java.util.List;
 
 @Entity
-@Table(name="Stastics_table")
-public class Stastics {
+@Table(name="Statistics_table")
+public class Statistics {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
+    private Long orderId;
     private Long restaurantId;
     private Long value;    
     ....
@@ -106,7 +109,7 @@ public class Stastics {
 package myProject_LSP;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface StasticsRepository extends PagingAndSortingRepository<Stastics, Long>{
+public interface StatisticsRepository extends PagingAndSortingRepository<Statistics, Long>{
     
 }
 ```
@@ -115,14 +118,14 @@ public interface StasticsRepository extends PagingAndSortingRepository<Stastics,
 ## 동기식 호출과 Fallback 처리
 
 분석단계에서의 조건 중 하나로 주문->취소 간의 호출은 트랜잭션으로 처리. 호출 프로토콜은 Rest Repository의 REST 서비스를 FeignClient 를 이용하여 호출.
-- 주문(Order)이 발생 했을 때, 통계 서비스를 호출하기 위해 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
+- 주문(Order)이 발생 했을 때, 통계 서비스를 호출하기 위해 Stub함수와 FeignClient 를 이용하여 인터페이스(Proxy)를 구현 
 
 ```
-@FeignClient(name="stastics", url="${api.url.stastics}")
-public interface StasticsService {
+@FeignClient(name="statistics", url="${api.url.statistics}")
+public interface StatisticsService {
 
-  @RequestMapping(method= RequestMethod.POST, path="/stastics")
-  public void stasticsSend(@RequestBody Stastics stastics);
+  @RequestMapping(method= RequestMethod.POST, path="/statistics")
+  public void statisticsSend(@RequestBody Statistics statistics);
 
 }
 ```
@@ -131,9 +134,9 @@ public interface StasticsService {
 ```
 @PrePersist
 public void onPrePersist(){
-   Stastics stastics = new Stastics();
-   BeanUtils.copyProperties(this, stastics);  
-   stastics.setValue(this.getValue()+stastics.getValue());    
+   Statistics statistics = new Statistics();
+   BeanUtils.copyProperties(this, statistics);  
+   stastics.setValue(this.getValue()+statistics.getValue());    
    stastics.publishAfterCommit();   
 ```
 
@@ -144,52 +147,47 @@ public void onPrePersist(){
 통계 처리 중, 주문수량 등에 특이성이 발견 될 경우 주문(Order)을 취소하는 publish를 발행한다.  
  
 ```
-# 주문시 재고량 체크하는 Cook 로직
+# 주문시 통계내역을 조회하는 로직
 @Entity
 @Table(name="Stastics_table")
 public class Stastics {
     private boolean flowchk = true;
-    ....
+    ...
     @PostPersist
     public void onPostPersist(){
-        if(flowchk) {    
-            Stastics stastics = new Stastics();
-            BeanUtils.copyProperties(this, stastics);
-            stastics.setValue(this.getValue()++);
-            cooked.publishAfterCommit();
-        }else{
-            CookQtyChecked cookQtyChecked = new CookQtyChecked();
-            BeanUtils.copyProperties(this, cookQtyChecked);
-            cookQtyChecked.publishAfterCommit();
+        if(flwchk) {        ### 특이 주문이 아닐 경우 주문횟수를 카운팅 해준다.
+            Statistics statistics = new Statistics();
+            BeanUtils.copyProperties(this, statistics);
+            statistics.setValue(stastics.getValue()++);
+            statistics.publishAfterCommit();
         }
     }
 
     @PrePersist
     public void onPrePersist(){
-        // 들어온 주문건수가 10개가 넘어가면 특이로 판단한다.
-        if(this.getValue() >= 10) {
-            Stastics stastics = new Stastics();
-            BeanUtils.copyProperties(this, stastics);
-            stastics.setValue(this.getValue()++);
-            cooked.publishAfterCommit();
+        if(this.getValue() > 10) {    ### 특이 주문이 들어올 경우 Order로 특이 주문 값을 publish
+            OrderStatisticsed orderStatisticsed = new OrderStatisticsed();
+            BeanUtils.copyProperties(this, orderStatisticsed);
+            orderStatisticsed.publishAfterCommit();
+            flwchk = false;
         }
     }
 }
 
 ...
-# 주문서비스의 Cancel 설정
-    @Autowired
-    OrderRepository orderRepository;
+# 주문서비스의 status를 변경 연동 설정
+@Autowired
+OrderRepository orderRepository;
 
-    @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverCookQtyChecked_CookCancelUpdate(@Payload CookQtyChecked cookQtyChecked){
-        if(cookQtyChecked.isMe()){
-            Optional<Order> orderOptional = orderRepository.findById(cookQtyChecked.getOrderId());
-            Order order = orderOptional.get();
-            order.setStatus("ORDER : QTY OVER CANCELED");
-            orderRepository.save(order);
-        }
-    }
+@StreamListener(KafkaProcessor.INPUT)
+public void wheneverOrderStatisticsed_OrderStatisticsedUpdate(@Payload OrderStatisticsed orderStatisticsed){
+  if(orderStatisticsed.isMe()){
+      Optional<Order> orderOptional = orderRepository.findById(OrderStatisticsed.getOrderId());
+      Order order = orderOptional.get();
+      order.setStatus("ORDER : ORDER CHK");
+      orderRepository.save(order);
+  }
+}
 ```
 
 </br>
@@ -198,7 +196,7 @@ public class Stastics {
 하나의 접점으로 서비스를 관리할 수 있는 Gateway를 통한 서비스라우팅을 적용 한다. Loadbalancer를 이용한 각 서비스의 접근을 확인 함.
 
 ```
-# Gateway 설정(https://github.com/dew0327/final-cna-gateway/blob/master/target/classes/application.yml)
+# Gateway 설정(https://github.com/hoirias/fin_gateway/blob/master/target/classes/application.yml)
 spring:
   profiles: docker
   cloud:
@@ -220,6 +218,10 @@ spring:
           uri: http://mypage:8080
           predicates:
             - Path= /mypages/**
+        - id: statistics
+          uri: http://statistics:8080
+          predicates:
+            - Path= /statisticses/**
       globalcors:
         corsConfigurations:
           '[/**]':
