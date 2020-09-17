@@ -242,7 +242,7 @@ server:
 </br>
 
 ## CQRS
-기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 고객은 주문 접수, 요리 상태, 배송현황 등을 한개의 페이지에서 확인 할 수 있게 됨.</br>
+기존 코드에 영향도 없이 mypage 용 materialized view 구성한다. 한개의 페이지에서 확인 할 수 있게 됨.</br>
 ```
 # 주문 내역 mypage에 insert
    @StreamListener(KafkaProcessor.INPUT)
@@ -300,11 +300,12 @@ server:
   * Github에 Codebuild를 위한 yml 파일을 업로드하고, codebuild와 연동 함
   * 각 마이크로서비스의 build 스펙
   ```
-    https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-delivery/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-gateway/blob/master/buildspec.yml
-    https://github.com/dew0327/final-cna-mypage/blob/master/buildspec.yml
+    https://github.com/hoirias/fn-order/blob/master/buildspec.yml
+    https://github.com/hoirias/fn-cook/blob/master/buildspec.yml
+    https://github.com/hoirias/fn-delivery/blob/master/buildspec.yml
+    https://github.com/hoirias/fn-gateway/blob/master/buildspec.yml
+    https://github.com/hoirias/fn-mypage/blob/master/buildspec.yml
+    https://github.com/hoirias/fn-stastics/blob/master/buildspec.yml
   ```
   
 </br>
@@ -312,9 +313,9 @@ server:
 ## 서킷 브레이킹과 오토스케일
 
 * 서킷 브레이킹 :
-주문이 과도할 경우 CB 를 통하여 장애격리. 500 에러가 5번 발생하면 10분간 CB 처리하여 100% 접속 차단
+주문이 과도하여 통계시스템에 부하가 걸릴 경우 CB 를 통하여 장애격리. 500 에러가 5번 발생하면 10분간 CB 처리하여 100% 접속 차단
 ```
-# AWS codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
+# AWS codebuild에 설정(https://github.com/hoirias/fn-stastics/blob/master/buildspec.yml)
  http:
    http1MaxPendingRequests: 1   # 연결을 기다리는 request 수를 1개로 제한 (Default 
    maxRequestsPerConnection: 1  # keep alive 기능 disable
@@ -331,8 +332,8 @@ CPU사용률 10% 초과 시 replica를 5개까지 확장해준다. 상용에서�
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: skcchpa-order
-  namespace: teamc
+  name: skcchpa-statistics
+  namespace: hoirias
   spec:
     scaleTargetRef:
     apiVersion: apps/v1
@@ -355,7 +356,7 @@ metadata:
   
 
 ```
-# AWS codebuild에 설정(https://github.com/dew0327/final-cna-cook/blob/master/buildspec.yml)
+# AWS codebuild에 설정(https://github.com/fn-stastics/blob/master/buildspec.yml)
   spec:
     replicas: 5
     minReadySeconds: 10   # 최소 대기 시간 10초
@@ -368,13 +369,13 @@ metadata:
 ```
 
 - 새버전으로의 배포 시작(V3로 배포)
-![ZeroDownTime  console - pod change status](https://user-images.githubusercontent.com/54210936/93277970-4c2d1c00-f7fe-11ea-87ce-82cdd77e84ac.jpg)
+![imagechange_0](https://user-images.githubusercontent.com/54210936/93409084-0bea9e00-f8d1-11ea-988c-dc8c96fa7492.png)
 
 - siege를 이용한 부하 적용. Availability가 100% 미만으로 떨어짐. 쿠버네티스가 새로 올려진 서비스를 Ready 상태로 인식하여 서비스 유입을 진행 하였음. Readiness Probe 설정하여 조치 필요.
-![ZeroDownTime  SEIGE_STATUS](https://user-images.githubusercontent.com/54210936/93277995-6109af80-f7fe-11ea-9ebf-5de918c150cc.jpg)
+![siege_1](https://user-images.githubusercontent.com/54210936/93409676-5d475d00-f8d2-11ea-8c54-5c2c9164e993.png)
 
 - 새버전 배포 확인(V3 적용)
-![ZeroDownTime  console - pod describe](https://user-images.githubusercontent.com/54210936/93278015-6d8e0800-f7fe-11ea-82d1-dc80b96b601c.jpg)
+![imagechange_3](https://user-images.githubusercontent.com/54210936/93409920-eced0b80-f8d2-11ea-9d55-fe30ed34510f.png)
 
 
 - Readiness Probe 설정을 통한 ZeroDownTime 설정.
