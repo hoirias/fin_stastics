@@ -110,7 +110,7 @@ package myProject_LSP;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface StatisticsRepository extends PagingAndSortingRepository<Statistics, Long>{
-    
+    Optional<Statistics> findByRestaurantId(Long RestaurantId);
 }
 ```
 </br>
@@ -144,7 +144,7 @@ public void onPrePersist(){
 
 ## 비동기식 호출과 Saga Pattern
 
-통계 처리 중, 주문수량 등에 특이성이 발견 될 경우 주문(Order)을 취소하는 publish를 발행한다.  
+통계 처리 중, 주문수량 등에 특이성이 발견 될 경우 주문(Order) ID에 STATUS를 기록하는 publish를 발행한다.  
  
 ```
 # 주문시 통계내역을 조회하는 로직
@@ -236,8 +236,8 @@ spring:
 server:
   port: 8080
 ```
-![gateway_LoadBalancer (1)](https://user-images.githubusercontent.com/54210936/93281154-7aaef500-f806-11ea-997d-c70dc6a81056.png)
-![gateway_LoadBalancer_delivery (1)](https://user-images.githubusercontent.com/54210936/93281029-1e4bd580-f806-11ea-9b95-70b9985b6fde.png)
+![gateway1](https://user-images.githubusercontent.com/54210936/93407972-6df5d400-f8ce-11ea-8145-60dcd6a65188.png)
+![gateway2](https://user-images.githubusercontent.com/54210936/93407973-6df5d400-f8ce-11ea-9b90-44d741445dff.png)
 
 </br>
 
