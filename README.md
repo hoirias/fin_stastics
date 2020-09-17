@@ -392,53 +392,35 @@ metadata:
 </br>
 
 ## 마이크로서비스 로깅 관리를 위한 PVC 설정
-AWS의 EFS에 파일시스템을 생성(EFS-teamc (fs-96929df7))하고 서브넷과 클러스터(TeamC-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
+AWS의 EFS에 파일시스템을 생성(admin12-efs (fs-314a5510))하고 서브넷과 클러스터(admin12-final)를 연결하고 PVC를 설정해준다. 각 마이크로 서비스의 로그파일이 EFS에 정상적으로 생성되고 기록됨을 확인 함.
 ```
-#AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
+#AWS의 각 codebuild에 설정(https://github.com/hoirias/fn-stastics/blob/master/buildspec.yml)
 volumeMounts:  
-- mountPath: "/mnt/aws"    # ORDER서비스 로그파일 생성 경로
+- mountPath: "/mnt/aws"    # 서비스 로그파일 생성 경로
   name: volume                 
-volumes:                                # 로그 파일 생성을 위한 EFS, PVC 설정 정보
+volumes:                   # 로그 파일 생성을 위한 EFS, PVC 설정 정보
 - name: volume
   persistentVolumeClaim:
   claimName: aws-efs  
 ```
-![PVC  console - log file test](https://user-images.githubusercontent.com/54210936/93280070-bc8a6c00-f803-11ea-8c0e-ab82c729dfd6.jpg)
+![efs](https://user-images.githubusercontent.com/54210936/93411335-e318d780-f8d5-11ea-829a-28ee69973691.png)
 
 </br>
 
 ## SelfHealing
-운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축한다. 프로세스가 죽었을 때 다시 기동됨을 확인함.
+운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축한다. 
+log 파일을 삭제하여 어플리케이션이 아웃시키고 프로세스 재기동을 확인 함.
 ```
-#AWS의 각 codebuild에 설정(https://github.com/dew0327/final-cna-order/blob/master/buildspec.yml)
+#AWS의 각 codebuild에 설정(https://github.com/hoirias/fn-stastics/blob/master/buildspec.yml)
 livenessProbe:
   tcpSocket:
   port: 8080
   initialDelaySeconds: 20     # 서비스 어플 기동 후 20초 뒤 시작
   periodSeconds: 3            # 3초 주기로 livenesProbe 실행 
 ```
-![Self-healing  console test](https://user-images.githubusercontent.com/54210936/93280338-5b16cd00-f804-11ea-9687-2d9f8cac9ff1.jpg)
+![efs](https://user-images.githubusercontent.com/54210936/93411335-e318d780-f8d5-11ea-829a-28ee69973691.png)
+![efs2](https://user-images.githubusercontent.com/54210936/93411886-0ee88d00-f8d7-11ea-93c7-8e4af7e394ef.png)
 
 </br>
 </br>
 
-
-
-# 첨부
-팀프로젝트 구성을 위해 사용한 계정 정보 및 클러스터 명, Github 주소 등의 내용 공유 
-* AWS 계정 명 : TeamC
-```
-Region : ap-northeast2
-EFS : EFS-teamc (fs-96929df7)
-EKS : TeamC-final
-ECR : order / delivery / cook / mypage / gateway
-Codebuild : order / delivery / cook / mypage / gateway
-```
-* Github :</br>
-```
-https://github.com/dew0327/final-cna-gateway
-https://github.com/dew0327/final-cna-order
-https://github.com/dew0327/final-cna-delivery
-https://github.com/dew0327/final-cna-cook
-https://github.com/dew0327/final-cna-mypage
-```
