@@ -372,7 +372,7 @@ metadata:
 ![imagechange_0](https://user-images.githubusercontent.com/54210936/93409084-0bea9e00-f8d1-11ea-988c-dc8c96fa7492.png)
 
 - siege를 이용한 부하 적용. Availability가 100% 미만으로 떨어짐. 쿠버네티스가 새로 올려진 서비스를 Ready 상태로 인식하여 서비스 유입을 진행 하였음. Readiness Probe 설정하여 조치 필요.
-![siege_1](https://user-images.githubusercontent.com/54210936/93409676-5d475d00-f8d2-11ea-8c54-5c2c9164e993.png)
+![siege_3](https://user-images.githubusercontent.com/54210936/93412876-fc6f5300-f8d8-11ea-836d-809ea5bb16ed.png)
 
 - 새버전 배포 확인(V3 적용)
 ![imagechange_3](https://user-images.githubusercontent.com/54210936/93412131-86b6b780-f8d7-11ea-92df-3621ed74d4eb.png)
@@ -409,7 +409,7 @@ volumes:                   # 로그 파일 생성을 위한 EFS, PVC 설정 정�
 
 ## SelfHealing
 운영 안정성의 확보를 위해 마이크로서비스가 아웃된 뒤에 다시 프로세스가 올라오는 환경을 구축한다. 
-log 파일을 삭제하여 어플리케이션이 아웃시키고 프로세스 재기동을 확인 함.
+log 파일을 삭제하여 어플리케이션을 죽이고, 프로세스가 재기동 됨을 확인 함.
 ```
 #AWS의 각 codebuild에 설정(https://github.com/hoirias/fn-stastics/blob/master/buildspec.yml)
 livenessProbe:
