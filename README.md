@@ -270,17 +270,17 @@ server:
         }
     }
 
-# 요리내역(Cook) mypage 업데이트
+# mypage 업데이트
     @StreamListener(KafkaProcessor.INPUT)
-    public void whenCooked_then_UPDATE_1(@Payload Cooked cooked) {
+    public void whenStatisticsed_then_UPDATE_1(@Payload Statisticsed statisticsed) {
         try {
-            if (cooked.isMe()) {
+            if (statisticsed.isMe()) {
                 // view 객체 조회
-                List<Mypage> mypageList = mypageRepository.findByOrderId(cooked.getOrderId());
+                List<Mypage> mypageList = mypageRepository.findByOrderId(statisticsed.getId());
                 for(Mypage mypage : mypageList){
                     // view 객체에 이벤트의 eventDirectValue 를 set 함
-                    mypage.setCookId(cooked.getId());
-                    mypage.setCookStatus(cooked.getStatus());
+                    mypage.setStatisticsedId(statisticsed.getId());
+                    mypage.setStatisticsedQty(statisticsed.getQty());
                     // view 레파지 토리에 save
                     mypageRepository.save(mypage);
                 }
