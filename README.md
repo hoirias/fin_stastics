@@ -418,7 +418,7 @@ livenessProbe:
   initialDelaySeconds: 20     # 서비스 어플 기동 후 20초 뒤 시작
   periodSeconds: 3            # 3초 주기로 livenesProbe 실행 
 ```
-![efs](https://user-images.githubusercontent.com/54210936/93411335-e318d780-f8d5-11ea-829a-28ee69973691.png)
+![selfhealing](https://user-images.githubusercontent.com/54210936/93412203-ae0d8480-f8d7-11ea-8acf-329acfe7c789.png)
 ![efs2](https://user-images.githubusercontent.com/54210936/93411886-0ee88d00-f8d7-11ea-93c7-8e4af7e394ef.png)
 
 </br>
