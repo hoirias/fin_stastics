@@ -129,7 +129,7 @@ public interface StatisticsService {
 }
 ```
 
-- 주문이 접수 될 경우 통계(Stastics)에 주문내역을 추가 해준다.
+- 주문이 접수 될 경우 통계(Statistics)에 주문내역을 추가 해준다.
 ```
 @Autowired
 StatisticsRepository statisticsRepository;
@@ -140,8 +140,8 @@ public void onPostPersist(){
    Statistics statistics = statisticsOptional.getQty();
    BeanUtils.copyProperties(this, statistics);  
    statistics.setQty(this.getValue()+statistics.getQty());  
-   statisticsRepository.save(stastics);
-   stastics.publishAfterCommit();   
+   statisticsRepository.save(statistics);
+   statistics.publishAfterCommit();   
 ```
 ![reqres](https://user-images.githubusercontent.com/54210936/93415519-a7ced680-f8de-11ea-81ab-e21ebf9514e0.png)
 ![reqres2](https://user-images.githubusercontent.com/54210936/93416865-a226c000-f8e1-11ea-9fde-9d78e3a123f9.png)
@@ -157,8 +157,8 @@ public void onPostPersist(){
 ```
 # 주문시 통계내역을 조회하는 로직
 @Entity
-@Table(name="Stastics_table")
-public class Stastics {
+@Table(name="statistics_table")
+public class Statistics {
     private boolean flowchk = true;
     ...
     @PostPersist
@@ -166,7 +166,7 @@ public class Stastics {
         if(flwchk) {        ### 특이 주문이 아닐 경우 주문횟수를 카운팅 해준다.
             Statistics statistics = new Statistics();
             BeanUtils.copyProperties(this, statistics);
-            statistics.setQty(stastics.getQty()++);
+            statistics.setQty(statistics.getQty()++);
             statistics.publishAfterCommit();
         }
     }
