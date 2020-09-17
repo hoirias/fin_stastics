@@ -139,7 +139,7 @@ public void onPostPersist(){
    stastics.publishAfterCommit();   
 ```
 ![reqres](https://user-images.githubusercontent.com/54210936/93415519-a7ced680-f8de-11ea-81ab-e21ebf9514e0.png)
-![reqres2](https://user-images.githubusercontent.com/54210936/93416110-0d6f9280-f8e0-11ea-9903-ae5b08961ede.png)
+![reqres2](https://user-images.githubusercontent.com/54210936/93416865-a226c000-f8e1-11ea-9fde-9d78e3a123f9.png)
 </br>
 
 
