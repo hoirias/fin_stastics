@@ -237,7 +237,7 @@ server:
   port: 8080
 ```
 ![gateway1](https://user-images.githubusercontent.com/54210936/93407972-6df5d400-f8ce-11ea-8145-60dcd6a65188.png)
-![gateway2](https://user-images.githubusercontent.com/54210936/93407973-6df5d400-f8ce-11ea-9b90-44d741445dff.png)
+![gateway2](https://user-images.githubusercontent.com/54210936/93413380-2117fa80-f8da-11ea-9b65-19c6db71479c.png)
 
 </br>
 
