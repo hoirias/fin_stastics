@@ -290,7 +290,7 @@ server:
         }
     }
  ```
-![cqrs](https://user-images.githubusercontent.com/54210936/93281210-987c5a00-f806-11ea-835b-2cea09bf6466.png)
+![crqs](https://user-images.githubusercontent.com/54210936/93418225-dd76be00-f8e4-11ea-82ac-60b066537fef.jpg)
 
 </br>
 </br>
