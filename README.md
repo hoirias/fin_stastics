@@ -339,13 +339,13 @@ metadata:
     apiVersion: apps/v1
     kind: Deployment
     name: $_PROJECT_NAME                # order (주문) 서비스 HPA 설정
-    minReplicas: 3                      # 최소 3개
+    minReplicas: 1                      # 최소 1개
     maxReplicas: 5                      # 최대 5개
     targetCPUUtilizationPercentage: 10  # cpu사용율 10프로 초과 시 
 ```    
 * 부하테스트(Siege)를 활용한 부하 적용 후 서킷브레이킹 / 오토스케일 내역을 확인한다.
 ![siege_1](https://user-images.githubusercontent.com/54210936/93409676-5d475d00-f8d2-11ea-8c54-5c2c9164e993.png)
-![HPA  TOBE_STATUS](https://user-images.githubusercontent.com/54210936/93167897-95c52a80-f75c-11ea-8f0e-51a94332141b.jpg)
+![replica](https://user-images.githubusercontent.com/54210936/93410779-997bbd00-f8d4-11ea-96dc-64f3351f1f47.png)
 
 </br>
 
