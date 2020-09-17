@@ -100,7 +100,7 @@ public class Statistics {
     private Long id;
     private Long orderId;
     private Long restaurantId;
-    private Long value;    
+    private Long qty;    
     ....
 }
 ```
@@ -140,7 +140,7 @@ public void onPrePersist(){
    stastics.publishAfterCommit();   
 ```
 ![reqres](https://user-images.githubusercontent.com/54210936/93415519-a7ced680-f8de-11ea-81ab-e21ebf9514e0.png)
-![reqres2](https://user-images.githubusercontent.com/54210936/93415520-a9000380-f8de-11ea-9ce7-f97c7492a936.png)
+![reqres2](https://user-images.githubusercontent.com/54210936/93416110-0d6f9280-f8e0-11ea-9903-ae5b08961ede.png)
 </br>
 
 
