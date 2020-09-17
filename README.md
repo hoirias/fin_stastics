@@ -375,7 +375,7 @@ metadata:
 ![siege_1](https://user-images.githubusercontent.com/54210936/93409676-5d475d00-f8d2-11ea-8c54-5c2c9164e993.png)
 
 - 새버전 배포 확인(V3 적용)
-![imagechange_3](https://user-images.githubusercontent.com/54210936/93409920-eced0b80-f8d2-11ea-9d55-fe30ed34510f.png)
+![imagechange_3](https://user-images.githubusercontent.com/54210936/93412131-86b6b780-f8d7-11ea-92df-3621ed74d4eb.png)
 
 
 - Readiness Probe 설정을 통한 ZeroDownTime 설정.
