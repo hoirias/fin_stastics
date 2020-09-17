@@ -250,19 +250,14 @@ server:
 ```
 # 주문 내역 mypage에 insert
    @StreamListener(KafkaProcessor.INPUT)
-    public void whenOrdered_then_CREATE_1 (@Payload Ordered ordered) {
+    public void whenStatisticsed_then_CREATE_1 (@Payload Statisticsed statisticsed) {
         try {
-            if (ordered.isMe()) {
+            if (statisticsed.isMe()) {
                 // view 객체 생성
                 Mypage mypage = new Mypage();
                 // view 객체에 이벤트의 Value 를 set 함
-                mypage.setRestaurantId(ordered.getRestaurantId());
-                mypage.setRestaurantMenuId(ordered.getRestaurantMenuId());
-                mypage.setCustomerId(ordered.getCustomerId());
-                mypage.setQty(ordered.getQty());
-                mypage.setOrderId(ordered.getId());
-                mypage.setOrderStatus(ordered.getStatus());
-                // view 레파지 토리에 save
+                mypage.setRestaurantId(statisticsed.getRestaurantId());
+                mypage.setRestaurantMenuId(statisticsed.getQty());
                 mypageRepository.save(mypage);
             }
         }catch (Exception e){
