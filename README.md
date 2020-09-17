@@ -1,7 +1,7 @@
 # Intensive Lv2. TeamC_송승일
 
 음식을 주문하고 요리하여 배달하는 현황을 확인 할 수 있는 CNA의 개발.</br>
-개인 프로젝트로 주문 내역을 기반으로 통계를 만들고 통계자료를 볼 수 있는 신규 마이크로서비스를 개발 한다.
+개인 프로젝트로 주문내역을 기반으로 인기있는 식당을 조회할 수 있는 통계성 마이크로서비스를 개발한다. 
 
 # Table of contents
 
@@ -24,13 +24,12 @@
 
 # 서비스 시나리오
 
-음식을 주문하고, 요리현황 및 배달현황을 조회.
-주문결과를 기반으로 식당+메뉴별 주문현황의 통계 데이터를 생성한다.
+음식을 주문하고, 요리현황 및 배달현황을 조회. 주문내역을 기반으로 식당별 주문량을 조회하여 이를 통해 인기있는 식당을 판별.
 
 ## 기능적 요구사항
 
-1. 주문결과를 기반으로 식당+메뉴별 주문현황의 통계 데이터를 생성한다.
-1. 주문결과를 기반으로 생성된 통계의 다른 Key 값을 Mypage에서 확인한다.
+1. 주문결과를 기반으로 식당별 인기를 가늠하기 위한 주문 수량을 누적 관리하는 통계시스템의 개발.
+1. 식당별 주문 수량을 Mypage에서 확인.
 
 ## 비기능적 요구사항
 1. 장애격리
@@ -97,10 +96,8 @@ public class Stastics {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private Integer restaurantId;
-    private Integer restaurantMenuId;
-    private Integer value;
-    
+    private Long restaurantId;
+    private Long value;    
     ....
 }
 ```
@@ -135,17 +132,16 @@ public interface StasticsService {
 @PrePersist
 public void onPrePersist(){
    Stastics stastics = new Stastics();
-   this.setValue(stastics.getValue()++);
-   BeanUtils.copyProperties(this, stastics);   
-   stastics.publishAfterCommit();
+   BeanUtils.copyProperties(this, stastics);  
+   stastics.setValue(this.getValue()+stastics.getValue());    
+   stastics.publishAfterCommit();   
 ```
 
 </br>
 
 ## 비동기식 호출과 Saga Pattern
 
-통계 처리 중, 주문수량 등에 특이성이 발견 될 경우 주문취소(Order)를 요청하는 publish를 발행한다. 
-주문이 취소될 경우에는 주문접수 처에 이상 여부를 alerting 해준다.
+통계 처리 중, 주문수량 등에 특이성이 발견 될 경우 주문(Order)을 취소하는 publish를 발행한다.  
  
 ```
 # 주문시 재고량 체크하는 Cook 로직
@@ -170,9 +166,12 @@ public class Stastics {
 
     @PrePersist
     public void onPrePersist(){
-        // 요리를 할 수 있는 재고가 없을 때 요리를 시작한다
+        // 들어온 주문건수가 10개가 넘어가면 특이로 판단한다.
         if(this.getValue() >= 10) {
-            flowchk = false;
+            Stastics stastics = new Stastics();
+            BeanUtils.copyProperties(this, stastics);
+            stastics.setValue(this.getValue()++);
+            cooked.publishAfterCommit();
         }
     }
 }
