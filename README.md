@@ -98,7 +98,6 @@ public class Statistics {
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    private Long orderId;
     private Long restaurantId;
     private Long qty;    
     ....
