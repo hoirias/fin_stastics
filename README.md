@@ -131,8 +131,8 @@ public interface StatisticsService {
 
 - 주문이 접수 될 경우 통계(Stastics)에 주문내역을 추가 해준다.
 ```
-@PrePersist
-public void onPrePersist(){
+@PostPersist
+public void onPostPersist(){
    Statistics statistics = new Statistics();
    BeanUtils.copyProperties(this, statistics);  
    stastics.setValue(this.getValue()+statistics.getValue());    
@@ -187,11 +187,12 @@ public void wheneverOrderStatisticsed_OrderStatisticsedUpdate(@Payload OrderStat
   if(orderStatisticsed.isMe()){
       Optional<Order> orderOptional = orderRepository.findById(OrderStatisticsed.getOrderId());
       Order order = orderOptional.get();
-      order.setStatus("ORDER : ORDER CHK");
+      order.setStatus("ORDER : ORDERED chk");
       orderRepository.save(order);
   }
 }
 ```
+![saga](https://user-images.githubusercontent.com/54210936/93416722-4e1bdb80-f8e1-11ea-91a0-1e7157aa575b.png)
 
 </br>
 
